@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fantasy PL · NHOB</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pl-purple: #37003c;
+    --pl-green:  #00ff85;
+    --pl-pink:   #ff2882;
+    --pl-white:  #f8f8f8;
+    --pl-grey:   #b0b0b8;
+    --pl-dark:   #1a0020;
+    --pl-card:   #2a0035;
+    --pl-border: rgba(0,255,133,0.15);
+    --gold:      #ffd700;
+    --silver:    #c0c0c0;
+    --bronze:    #cd7f32;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--pl-dark);
+    color: var(--pl-white);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── PITCH LINES BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,133,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,133,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: relative;
+    z-index: 10;
+    background: linear-gradient(135deg, var(--pl-purple) 0%, #5f0070 50%, var(--pl-purple) 100%);
+    border-bottom: 3px solid var(--pl-green);
+    padding: 0;
+    overflow: hidden;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--pl-green), var(--pl-pink), var(--pl-green));
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 24px 16px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .pl-lion {
+    font-size: 52px;
+    line-height: 1;
+    filter: drop-shadow(0 0 20px rgba(0,255,133,0.4));
+  }
+
+  .header-text h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--pl-white);
+    line-height: 1;
+  }
+
+  .header-text h1 span {
+    color: var(--pl-green);
+  }
+
+  .header-meta {
+    display: flex;
+    gap: 16px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.1);
+    color: var(--pl-grey);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .badge.green { background: rgba(0,255,133,0.15); color: var(--pl-green); border-color: rgba(0,255,133,0.3); }
+  .badge.pink  { background: rgba(255,40,130,0.15); color: var(--pl-pink);  border-color: rgba(255,40,130,0.3); }
+
+  .header-right {
+    margin-left: auto;
+    text-align: right;
+  }
+
+  #last-updated {
+    font-size: 11px;
+    color: var(--pl-grey);
+    letter-spacing: 0.5px;
+  }
+
+  .refresh-btn {
+    margin-top: 6px;
+    background: none;
+    border: 1px solid var(--pl-green);
+    color: var(--pl-green);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 5px 12px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    display: block;
+  }
+
+  .refresh-btn:hover { background: var(--pl-green); color: var(--pl-dark); }
+
+  /* ── NAV TABS ── */
+  nav {
+    position: relative;
+    z-index: 10;
+    background: var(--pl-purple);
+    border-bottom: 1px solid var(--pl-border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+
+  .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    padding: 0 24px;
+  }
+
+  .tab-btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 14px 20px;
+    border: none;
+    background: none;
+    color: var(--pl-grey);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .tab-btn:hover { color: var(--pl-white); }
+  .tab-btn.active {
+    color: var(--pl-green);
+    border-bottom-color: var(--pl-green);
+  }
+
+  /* ── MAIN ── */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 28px 24px 60px;
+  }
+
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* ── SECTION HEADER ── */
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--pl-white);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title .icon { font-size: 24px; }
+  .section-subtitle {
+    color: var(--pl-grey);
+    font-size: 13px;
+    margin-bottom: 24px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── CARDS GRID ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--pl-card);
+    border: 1px solid var(--pl-border);
+    border-radius: 4px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--pl-green);
+  }
+
+  .stat-card.pink::before { background: var(--pl-pink); }
+  .stat-card.gold::before { background: var(--gold); }
+
+  .stat-card-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--pl-grey);
+    margin-bottom: 8px;
+  }
+
+  .stat-card-value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--pl-green);
+    line-height: 1;
+  }
+
+  .stat-card.pink .stat-card-value { color: var(--pl-pink); }
+  .stat-card.gold .stat-card-value { color: var(--gold); }
+
+  /* ── TABLE ── */
+  .table-wrap {
+    background: var(--pl-card);
+    border: 1px solid var(--pl-border);
+    border-radius: 4px;
+    overflow-x: auto;
+    margin-bottom: 32px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    min-width: 400px;
+  }
+
+  thead tr {
+    background: var(--pl-purple);
+    border-bottom: 2px solid var(--pl-green);
+  }
+
+  th {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--pl-grey);
+    padding: 12px 16px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  th.num { text-align: right; }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: background 0.15s;
+  }
+
+  tbody tr:hover { background: rgba(0,255,133,0.04); }
+  tbody tr:last-child { border-bottom: none; }
+
+  td {
+    padding: 13px 16px;
+    color: var(--pl-white);
+    white-space: nowrap;
+  }
+
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.muted { color: var(--pl-grey); font-size: 12px; }
+
+  /* Position medal */
+  .pos {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    color: var(--pl-grey);
+  }
+
+  .pos.p1 { background: rgba(255,215,0,0.15);  color: var(--gold);   border: 1px solid rgba(255,215,0,0.3); }
+  .pos.p2 { background: rgba(192,192,192,0.15); color: var(--silver); border: 1px solid rgba(192,192,192,0.3); }
+  .pos.p3 { background: rgba(205,127,50,0.15);  color: var(--bronze); border: 1px solid rgba(205,127,50,0.3); }
+
+  .player-name {
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .total-pts {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--pl-green);
+  }
+
+  /* GW columns compact */
+  .gw-col { min-width: 36px; text-align: center; color: var(--pl-grey); font-size: 12px; }
+  .gw-col.has-value { color: var(--pl-white); }
+
+  /* ── PUNIÇÕES TABLE ── */
+  .fine-cell {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--pl-pink);
+  }
+
+  /* ── PRÉMIOS BLOCK ── */
+  .prizes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .prize-card {
+    background: var(--pl-card);
+    border: 1px solid var(--pl-border);
+    border-radius: 4px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .prize-card .prize-icon { font-size: 32px; margin-bottom: 8px; }
+  .prize-card .prize-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--pl-grey);
+    margin-bottom: 6px;
+  }
+
+  .prize-card .prize-value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 30px;
+    font-weight: 900;
+    color: var(--gold);
+  }
+
+  /* ── TAÇA BRACKET ── */
+  .taca-section {
+    margin-bottom: 28px;
+  }
+
+  .taca-section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--pl-green);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--pl-border);
+    margin-bottom: 16px;
+  }
+
+  .grupos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 600px) {
+    .grupos-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── LOADING ── */
+  .loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--pl-grey);
+  }
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(0,255,133,0.2);
+    border-top-color: var(--pl-green);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-box {
+    background: rgba(255,40,130,0.1);
+    border: 1px solid rgba(255,40,130,0.3);
+    border-radius: 4px;
+    padding: 20px;
+    text-align: center;
+    color: var(--pl-pink);
+    font-size: 14px;
+  }
+
+  /* ── FINANCEIRO ── */
+  .pot-highlight {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--gold);
+    text-align: center;
+    padding: 32px;
+    background: var(--pl-card);
+    border: 1px solid rgba(255,215,0,0.2);
+    border-radius: 4px;
+    margin-bottom: 24px;
+  }
+
+  .pot-highlight small {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pl-grey);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  /* ── CONFIG INFO ── */
+  .config-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .config-item {
+    background: var(--pl-card);
+    border: 1px solid var(--pl-border);
+    border-radius: 4px;
+    padding: 14px 16px;
+  }
+
+  .config-item-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--pl-grey);
+    margin-bottom: 4px;
+  }
+
+  .config-item-value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--pl-white);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 20px;
+    color: rgba(176,176,184,0.4);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-top: 1px solid var(--pl-border);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 480px) {
+    .header-inner { padding: 16px; gap: 12px; }
+    .pl-lion { font-size: 36px; }
+    main { padding: 20px 16px 60px; }
+    .tab-btn { padding: 12px 14px; font-size: 12px; }
+    .header-right { display: none; }
+  }
+
+  /* scroll indicator for tables */
+  .scroll-hint {
+    font-size: 11px;
+    color: var(--pl-grey);
+    text-align: right;
+    margin-bottom: 6px;
+    display: none;
+  }
+
+  @media (max-width: 768px) { .scroll-hint { display: block; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="pl-lion">⚽</div>
+    <div class="header-text">
+      <h1>Fantasy <span>Premier League</span></h1>
+      <div class="header-meta">
+        <span class="badge green" id="badge-grupo">NHOB</span>
+        <span class="badge pink" id="badge-epoca">2026/27</span>
+        <span class="badge" id="badge-gw">GW —</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div id="last-updated">A carregar dados…</div>
+      <button class="refresh-btn" onclick="loadAll()">↻ Atualizar</button>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-inner">
+    <button class="tab-btn active" data-tab="liga">🏆 Liga</button>
+    <button class="tab-btn" data-tab="punicoes">💸 Punições</button>
+    <button class="tab-btn" data-tab="taca">🏅 Taça</button>
+    <button class="tab-btn" data-tab="prognosticos">🔮 Prognósticos</button>
+    <button class="tab-btn" data-tab="financeiro">💰 Financeiro</button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ═══════ LIGA ═══════ -->
+  <div id="tab-liga" class="tab-pane active">
+    <div class="section-title"><span class="icon">🏆</span> Classificação da Liga</div>
+    <p class="section-subtitle">Pontos acumulados por jornada · Atualizado automaticamente</p>
+    <div id="liga-stats" class="cards-grid"></div>
+    <p class="scroll-hint">← desliza para ver todas as jornadas →</p>
+    <div id="liga-table" class="table-wrap"><div class="loading"><div class="loading-spinner"></div>A carregar…</div></div>
+  </div>
+
+  <!-- ═══════ PUNIÇÕES ═══════ -->
+  <div id="tab-punicoes" class="tab-pane">
+    <div class="section-title"><span class="icon">💸</span> Punições Semanais</div>
+    <p class="section-subtitle">Os 3 últimos de cada jornada pagam €0,50</p>
+    <div id="punicoes-stats" class="cards-grid"></div>
+    <div id="punicoes-table" class="table-wrap"><div class="loading"><div class="loading-spinner"></div>A carregar…</div></div>
+  </div>
+
+  <!-- ═══════ TAÇA ═══════ -->
+  <div id="tab-taca" class="tab-pane">
+    <div class="section-title"><span class="icon">🏅</span> Taça</div>
+    <p class="section-subtitle">Fase de grupos · Quartos · Meias-finais · Final</p>
+    <div id="taca-content"><div class="loading"><div class="loading-spinner"></div>A carregar…</div></div>
+  </div>
+
+  <!-- ═══════ PROGNÓSTICOS ═══════ -->
+  <div id="tab-prognosticos" class="tab-pane">
+    <div class="section-title"><span class="icon">🔮</span> Prognósticos de Época</div>
+    <p class="section-subtitle">Previsões de cada jogador · Pontuação final da época</p>
+    <div id="prognosticos-table" class="table-wrap"><div class="loading"><div class="loading-spinner"></div>A carregar…</div></div>
+  </div>
+
+  <!-- ═══════ FINANCEIRO ═══════ -->
+  <div id="tab-financeiro" class="tab-pane">
+    <div class="section-title"><span class="icon">💰</span> Financeiro</div>
+    <p class="section-subtitle">Saldos individuais · Pot total · Prémios</p>
+    <div id="financeiro-content"><div class="loading"><div class="loading-spinner"></div>A carregar…</div></div>
+  </div>
+
+</main>
+
+<footer>Fantasy Premier League · NHOB · Dados sincronizados com Google Sheets</footer>
+
+<script>
+// ════════════════════════════════════════════
+//  CONFIGURAÇÃO — substitui aqui os teus links
+// ════════════════════════════════════════════
+const SHEETS = {
+  config:        'https://docs.google.com/spreadsheets/d/e/2PACX-1vQvQZ4fjgygkXfPjLdlKr3yk4uNBBKIZyZTDWDRLlIQvXT0bTkk5ZLLWj7D4cnynMo6epQ3dt48ddP1/pub?gid=214434656&single=true&output=csv',
+  liga:          'https://docs.google.com/spreadsheets/d/e/2PACX-1vQvQZ4fjgygkXfPjLdlKr3yk4uNBBKIZyZTDWDRLlIQvXT0bTkk5ZLLWj7D4cnynMo6epQ3dt48ddP1/pub?gid=337365477&single=true&output=csv',
+  punicoes:      'https://docs.google.com/spreadsheets/d/e/2PACX-1vQvQZ4fjgygkXfPjLdlKr3yk4uNBBKIZyZTDWDRLlIQvXT0bTkk5ZLLWj7D4cnynMo6epQ3dt48ddP1/pub?gid=1089245198&single=true&output=csv',
+  taca:          'https://docs.google.com/spreadsheets/d/e/2PACX-1vQvQZ4fjgygkXfPjLdlKr3yk4uNBBKIZyZTDWDRLlIQvXT0bTkk5ZLLWj7D4cnynMo6epQ3dt48ddP1/pub?gid=1663622844&single=true&output=csv',
+  prognosticos:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQvQZ4fjgygkXfPjLdlKr3yk4uNBBKIZyZTDWDRLlIQvXT0bTkk5ZLLWj7D4cnynMo6epQ3dt48ddP1/pub?gid=829514251&single=true&output=csv',
+  financeiro:    'https://docs.google.com/spreadsheets/d/e/2PACX-1vQvQZ4fjgygkXfPjLdlKr3yk4uNBBKIZyZTDWDRLlIQvXT0bTkk5ZLLWj7D4cnynMo6epQ3dt48ddP1/pub?gid=717230100&single=true&output=csv',
+};
+
+// ════════════════════════════════════════════
+//  CSV PARSER
+// ════════════════════════════════════════════
+function parseCSV(text) {
+  const rows = [];
+  const lines = text.split('\n');
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const cells = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') { inQ = !inQ; }
+      else if (c === ',' && !inQ) { cells.push(cur.trim()); cur = ''; }
+      else { cur += c; }
+    }
+    cells.push(cur.trim());
+    rows.push(cells);
+  }
+  return rows;
+}
+
+async function fetchCSV(url) {
+  const r = await fetch(url + '&cachebust=' + Date.now());
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return parseCSV(await r.text());
+}
+
+// ════════════════════════════════════════════
+//  TABS
+// ════════════════════════════════════════════
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ════════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════════
+function posClass(i) {
+  if (i === 0) return 'p1';
+  if (i === 1) return 'p2';
+  if (i === 2) return 'p3';
+  return '';
+}
+
+function posLabel(i) {
+  return ['🥇','🥈','🥉'][i] || (i + 1);
+}
+
+function err(msg) {
+  return `<div class="error-box">❌ ${msg}</div>`;
+}
+
+function statCard(label, value, cls = '') {
+  return `<div class="stat-card ${cls}">
+    <div class="stat-card-label">${label}</div>
+    <div class="stat-card-value">${value}</div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════
+//  CONFIG
+// ════════════════════════════════════════════
+let configData = {};
+
+async function loadConfig() {
+  try {
+    const rows = await fetchCSV(SHEETS.config);
+    // Parse key-value rows from Config sheet
+    for (const row of rows) {
+      const key = (row[0] || '').toLowerCase();
+      const val = row[1] || '';
+      if (key.includes('grupo') || key.includes('nome do grupo')) configData.grupo = val;
+      if (key.includes('época') || key.includes('epoca')) configData.epoca = val;
+      if (key.includes('jornada atual') || key.includes('jornada')) configData.gw = val;
+      if (key.includes('jogadores') && key.includes('nº')) configData.numJogadores = val;
+      if (key.includes('punição') || key.includes('punicao')) configData.punicao = val;
+    }
+    // Update header badges
+    if (configData.grupo) document.getElementById('badge-grupo').textContent = configData.grupo;
+    if (configData.epoca) document.getElementById('badge-epoca').textContent = configData.epoca;
+    if (configData.gw)    document.getElementById('badge-gw').textContent = 'GW ' + configData.gw;
+  } catch(e) {
+    console.warn('Config load failed', e);
+  }
+}
+
+// ════════════════════════════════════════════
+//  LIGA
+// ════════════════════════════════════════════
+async function loadLiga() {
+  const container = document.getElementById('liga-table');
+  const stats = document.getElementById('liga-stats');
+  try {
+    const rows = await fetchCSV(SHEETS.liga);
+
+    // Find header row (has GW1)
+    let headerIdx = rows.findIndex(r => r.some(c => /^GW1$/i.test(c)));
+    if (headerIdx < 0) headerIdx = 1;
+    const header = rows[headerIdx];
+
+    // Find player rows
+    const players = [];
+    for (let i = headerIdx + 1; i < rows.length; i++) {
+      const r = rows[i];
+      const name = r[1] || '';
+      if (!name || name.includes('MÉDIA') || name.includes('MEDIA')) continue;
+      const total = parseFloat(r[header.length - 3]) || 0; // TOTAL col
+      const media = parseFloat(r[header.length - 2]) || 0;
+      const best  = parseFloat(r[header.length - 1]) || 0;
+      const gwScores = [];
+      for (let g = 2; g < header.length - 3; g++) {
+        gwScores.push(r[g] || '');
+      }
+      players.push({ pos: parseInt(r[0]) || i - headerIdx, name, total, media, best, gwScores });
+    }
+
+    // Sort by total desc
+    players.sort((a, b) => b.total - a.total);
+
+    // Stats cards
+    const leader = players[0];
+    const gwCols = header.filter(h => /^GW\d+$/i.test(h));
+    const currentGW = configData.gw || gwCols.length;
+
+    stats.innerHTML =
+      statCard('Líder', leader ? leader.name : '—') +
+      statCard('Pontos do Líder', leader ? leader.total : '—', 'green') +
+      statCard('Jornada Atual', 'GW ' + currentGW, 'gold') +
+      statCard('Jogadores', players.length);
+
+    // Table — show only GWs with data + last 5
+    const gwHeaders = header.slice(2, header.length - 3);
+    const hasData = gwHeaders.map((_, gi) => players.some(p => p.gwScores[gi] && p.gwScores[gi] !== '0' && p.gwScores[gi] !== ''));
+    const showCols = hasData.map((h, i) => h || i >= hasData.lastIndexOf(true) - 4);
+
+    let html = '<table><thead><tr><th>Pos</th><th>Jogador</th>';
+    gwHeaders.forEach((h, i) => {
+      if (showCols[i]) html += `<th class="gw-col">${h}</th>`;
+    });
+    html += '<th class="num">Total</th><th class="num">Média</th><th class="num">Melhor</th></tr></thead><tbody>';
+
+    players.forEach((p, idx) => {
+      const pc = posClass(idx);
+      html += `<tr>
+        <td><span class="pos ${pc}">${posLabel(idx)}</span></td>
+        <td><span class="player-name">${p.name}</span></td>`;
+      gwHeaders.forEach((_, gi) => {
+        if (!showCols[gi]) return;
+        const v = p.gwScores[gi];
+        const hasV = v && v !== '0' && v !== '';
+        html += `<td class="gw-col ${hasV ? 'has-value' : ''}">${hasV ? v : '<span style="opacity:.3">·</span>'}</td>`;
+      });
+      html += `<td class="num total-pts">${p.total}</td>
+        <td class="num muted">${p.media || '—'}</td>
+        <td class="num muted">${p.best || '—'}</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  } catch(e) {
+    container.innerHTML = err('Não foi possível carregar a Liga. ' + e.message);
+  }
+}
+
+// ════════════════════════════════════════════
+//  PUNIÇÕES
+// ════════════════════════════════════════════
+async function loadPunicoes() {
+  const container = document.getElementById('punicoes-table');
+  const stats = document.getElementById('punicoes-stats');
+  try {
+    const rows = await fetchCSV(SHEETS.punicoes);
+
+    let headerIdx = rows.findIndex(r => r.some(c => /^GW1$/i.test(c)));
+    if (headerIdx < 0) headerIdx = 1;
+    const header = rows[headerIdx];
+
+    const players = [];
+    let totalCaixinha = 0;
+
+    for (let i = headerIdx + 1; i < rows.length; i++) {
+      const r = rows[i];
+      const name = r[1] || '';
+      if (!name) continue;
+      if (name.includes('TOTAL')) {
+        totalCaixinha = parseFloat(r[header.length - 2]) || 0;
+        continue;
+      }
+      const totalEur = parseFloat(r[header.length - 2]) || 0;
+      const nMultas  = parseInt(r[header.length - 1]) || 0;
+      const gws = [];
+      for (let g = 2; g < header.length - 2; g++) {
+        gws.push(parseFloat(r[g]) || 0);
+      }
+      players.push({ pos: parseInt(r[0]), name, totalEur, nMultas, gws });
+    }
+
+    players.sort((a, b) => b.totalEur - a.totalEur);
+
+    const gwHeaders = header.slice(2, header.length - 2);
+    const hasData = gwHeaders.map((_, gi) => players.some(p => p.gws[gi] > 0));
+    const showCols = hasData.map((h, i) => h || i >= hasData.lastIndexOf(true) - 2);
+
+    stats.innerHTML =
+      statCard('Caixinha Total', `€${totalCaixinha.toFixed(2)}`, 'pink') +
+      statCard('Mais Punido', players[0] ? players[0].name : '—', 'pink') +
+      statCard('Total Multas', players.reduce((s, p) => s + p.nMultas, 0) + 'x');
+
+    let html = '<table><thead><tr><th>#</th><th>Jogador</th>';
+    gwHeaders.forEach((h, i) => {
+      if (showCols[i]) html += `<th class="gw-col">${h}</th>`;
+    });
+    html += '<th class="num">Total €</th><th class="num">Nº Multas</th></tr></thead><tbody>';
+
+    players.forEach((p, idx) => {
+      html += `<tr>
+        <td><span class="pos">${idx + 1}</span></td>
+        <td><span class="player-name">${p.name}</span></td>`;
+      gwHeaders.forEach((_, gi) => {
+        if (!showCols[gi]) return;
+        const v = p.gws[gi];
+        html += `<td class="gw-col">${v > 0 ? `<span class="fine-cell">€${v.toFixed(2)}</span>` : '<span style="opacity:.3">·</span>'}</td>`;
+      });
+      html += `<td class="num fine-cell">€${p.totalEur.toFixed(2)}</td>
+        <td class="num muted">${p.nMultas}x</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  } catch(e) {
+    container.innerHTML = err('Não foi possível carregar as Punições. ' + e.message);
+  }
+}
+
+// ════════════════════════════════════════════
+//  TAÇA
+// ════════════════════════════════════════════
+async function loadTaca() {
+  const container = document.getElementById('taca-content');
+  try {
+    const rows = await fetchCSV(SHEETS.taca);
+    let html = '';
+
+    // Parse sections by looking for keyword rows
+    let section = null;
+    let sectionRows = [];
+    const sections = [];
+
+    for (const row of rows) {
+      const line = row.join(' ').trim();
+      if (!line) continue;
+      if (line.includes('FASE DE GRUPOS')) {
+        if (section) sections.push({ name: section, rows: sectionRows });
+        section = 'FASE DE GRUPOS'; sectionRows = [];
+      } else if (line.includes('QUARTOS DE FINAL')) {
+        if (section) sections.push({ name: section, rows: sectionRows });
+        section = 'QUARTOS DE FINAL'; sectionRows = [];
+      } else if (line.includes('MEIAS-FINAIS') || line.includes('MEIAS FINAIS')) {
+        if (section) sections.push({ name: section, rows: sectionRows });
+        section = 'MEIAS-FINAIS'; sectionRows = [];
+      } else if (line.includes('FINAL') && !line.includes('MEIAS') && !line.includes('QUARTOS')) {
+        if (section) sections.push({ name: section, rows: sectionRows });
+        section = 'FINAL'; sectionRows = [];
+      } else if (section) {
+        sectionRows.push(row);
+      }
+    }
+    if (section) sections.push({ name: section, rows: sectionRows });
+
+    for (const sec of sections) {
+      const icon = sec.name === 'FINAL' ? '⚽' : sec.name.includes('MEIAS') ? '🔴' : sec.name.includes('QUARTOS') ? '🟡' : '🟢';
+      html += `<div class="taca-section">
+        <div class="taca-section-title">${icon} ${sec.name}</div>
+        <div class="table-wrap">
+          <table><thead></thead><tbody>`;
+
+      for (const row of sec.rows) {
+        if (row.every(c => !c)) continue;
+        html += '<tr>';
+        for (const cell of row) {
+          const isVS = cell === 'VS' || cell === 'vs';
+          html += `<td class="${isVS ? 'num' : ''}" style="${isVS ? 'color:var(--pl-pink);font-weight:900;font-family:Barlow Condensed,sans-serif;font-size:16px;' : ''}">${cell || ''}</td>`;
+        }
+        html += '</tr>';
+      }
+
+      html += '</tbody></table></div></div>';
+    }
+
+    if (!html) html = '<p class="section-subtitle">A Taça ainda não começou. Os dados aparecerão automaticamente.</p>';
+    container.innerHTML = html;
+  } catch(e) {
+    container.innerHTML = err('Não foi possível carregar a Taça. ' + e.message);
+  }
+}
+
+// ════════════════════════════════════════════
+//  PROGNÓSTICOS
+// ════════════════════════════════════════════
+async function loadPrognosticos() {
+  const container = document.getElementById('prognosticos-table');
+  try {
+    const rows = await fetchCSV(SHEETS.prognosticos);
+
+    // Find previsões header
+    let previdx = rows.findIndex(r => r.some(c => /campeão|campeao/i.test(c)));
+    if (previdx < 0) previdx = 2;
+    const header = rows[previdx];
+
+    const players = [];
+    for (let i = previdx + 1; i < rows.length; i++) {
+      const r = rows[i];
+      const name = r[1] || '';
+      if (!name || name.includes('REAL') || name.includes('PONTUAÇÃO') || name.includes('#')) continue;
+      const num = parseInt(r[0]);
+      if (!num) continue;
+      players.push({ num, name, cols: r.slice(2) });
+    }
+
+    let html = '<table><thead><tr><th>#</th><th>Jogador</th>';
+    for (let i = 2; i < Math.min(header.length, 9); i++) {
+      if (header[i]) html += `<th>${header[i]}</th>`;
+    }
+    html += '</tr></thead><tbody>';
+
+    players.forEach((p, idx) => {
+      html += `<tr>
+        <td><span class="pos ${posClass(idx)}">${posLabel(idx)}</span></td>
+        <td><span class="player-name">${p.name}</span></td>`;
+      for (let i = 0; i < 7; i++) {
+        const v = p.cols[i] || '';
+        html += `<td class="muted" style="font-size:13px;">${v || '<span style="opacity:.3">—</span>'}</td>`;
+      }
+      html += '</tr>';
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  } catch(e) {
+    container.innerHTML = err('Não foi possível carregar os Prognósticos. ' + e.message);
+  }
+}
+
+// ════════════════════════════════════════════
+//  FINANCEIRO
+// ════════════════════════════════════════════
+async function loadFinanceiro() {
+  const container = document.getElementById('financeiro-content');
+  try {
+    const rows = await fetchCSV(SHEETS.financeiro);
+    let html = '';
+
+    // Find POT TOTAL value
+    let potTotal = 0, potLiga = 0, potTaca = 0, potProg = 0;
+    for (const row of rows) {
+      const line = row.join('|');
+      if (line.includes('POT TOTAL') || line.includes('TOTAL ESTIMADO')) {
+        const vals = row.map(c => parseFloat(c)).filter(v => !isNaN(v) && v > 0);
+        if (vals.length) potTotal = Math.max(...vals);
+      }
+      if (line.includes('Pot Liga') && !line.includes('Punições')) {
+        const vals = row.map(c => parseFloat(c)).filter(v => !isNaN(v) && v > 0);
+        if (vals.length) potLiga = Math.max(...vals);
+      }
+      if (line.includes('Pot Taça')) {
+        const vals = row.map(c => parseFloat(c)).filter(v => !isNaN(v) && v > 0);
+        if (vals.length) potTaca = Math.max(...vals);
+      }
+      if (line.includes('Prognósticos') || line.includes('Prognosticos')) {
+        const vals = row.map(c => parseFloat(c)).filter(v => !isNaN(v) && v > 0);
+        if (vals.length && !potProg) potProg = vals[0];
+      }
+    }
+
+    if (potTotal > 0) {
+      html += `<div class="pot-highlight"><small>💰 Pot Total Estimado</small>€${potTotal.toFixed(0)}</div>`;
+    }
+
+    // Pot breakdown cards
+    html += '<div class="cards-grid">';
+    if (potLiga > 0) html += statCard('🏆 Pot Liga', `€${potLiga.toFixed(0)}`, 'gold');
+    if (potTaca > 0) html += statCard('🏅 Pot Taça', `€${potTaca.toFixed(0)}`);
+    if (potProg > 0) html += statCard('🔮 Pot Prognósticos', `€${potProg.toFixed(0)}`);
+    html += '</div>';
+
+    // Prémios
+    html += `<div class="section-title" style="font-size:18px;margin-bottom:16px;">🏆 Prémios Finais</div>
+    <div class="prizes-grid">
+      <div class="prize-card"><div class="prize-icon">🥇</div><div class="prize-label">1º Liga</div><div class="prize-value">60€</div></div>
+      <div class="prize-card"><div class="prize-icon">🥈</div><div class="prize-label">2º Liga</div><div class="prize-value">30€</div></div>
+      <div class="prize-card"><div class="prize-icon">🥉</div><div class="prize-label">3º Liga</div><div class="prize-value">10€</div></div>
+      <div class="prize-card"><div class="prize-icon">4️⃣</div><div class="prize-label">4º Liga</div><div class="prize-value">7€</div></div>
+      <div class="prize-card"><div class="prize-icon">🏆</div><div class="prize-label">Vencedor Taça</div><div class="prize-value">~26€</div></div>
+      <div class="prize-card"><div class="prize-icon">🔮</div><div class="prize-label">1º Prognósticos</div><div class="prize-value">~17€</div></div>
+    </div>`;
+
+    // Player table
+    let playerHeaderIdx = rows.findIndex(r => r.some(c => /ent\./i.test(c) || c.includes('Entrada')));
+    if (playerHeaderIdx >= 0) {
+      const pHeader = rows[playerHeaderIdx];
+      const players = [];
+      for (let i = playerHeaderIdx + 1; i < rows.length; i++) {
+        const r = rows[i];
+        const name = r[1] || '';
+        if (!name || name.includes('TOTAIS') || name.includes('Total')) continue;
+        const num = parseInt(r[0]);
+        if (!num) continue;
+        players.push({ num, name, vals: r.slice(2) });
+      }
+      if (players.length) {
+        html += `<div class="section-title" style="font-size:18px;margin:24px 0 16px;">👤 Saldos Individuais</div>
+        <div class="table-wrap"><table><thead><tr><th>#</th><th>Jogador</th>`;
+        for (let i = 2; i < pHeader.length; i++) {
+          if (pHeader[i]) html += `<th class="num">${pHeader[i]}</th>`;
+        }
+        html += '</tr></thead><tbody>';
+        players.forEach(p => {
+          html += `<tr><td><span class="pos">${p.num}</span></td><td><span class="player-name">${p.name}</span></td>`;
+          p.vals.forEach(v => {
+            const n = parseFloat(v);
+            html += `<td class="num" style="color:${!isNaN(n) && n > 0 ? 'var(--pl-green)' : 'var(--pl-grey)'};">${!isNaN(n) ? '€' + n.toFixed(2) : v || '—'}</td>`;
+          });
+          html += '</tr>';
+        });
+        html += '</tbody></table></div>';
+      }
+    }
+
+    container.innerHTML = html || '<p class="section-subtitle">Dados financeiros não disponíveis.</p>';
+  } catch(e) {
+    container.innerHTML = err('Não foi possível carregar o Financeiro. ' + e.message);
+  }
+}
+
+// ════════════════════════════════════════════
+//  LOAD ALL
+// ════════════════════════════════════════════
+async function loadAll() {
+  document.getElementById('last-updated').textContent = 'A carregar…';
+
+  // Reset loading states
+  ['liga-table','punicoes-table','taca-content','prognosticos-table','financeiro-content'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '<div class="loading"><div class="loading-spinner"></div>A carregar…</div>';
+  });
+  ['liga-stats','punicoes-stats'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '';
+  });
+
+  await loadConfig();
+  await Promise.allSettled([loadLiga(), loadPunicoes(), loadTaca(), loadPrognosticos(), loadFinanceiro()]);
+
+  const now = new Date();
+  document.getElementById('last-updated').textContent =
+    'Atualizado: ' + now.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+}
+
+// Boot
+loadAll();
+</script>
+</body>
+</html>
